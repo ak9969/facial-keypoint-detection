@@ -21,7 +21,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from model import *
-my_model = CNN_Model()
+my_model = load_my_CNN_model('my_model')
+
 face_cascade = cv2.CascadeClassifier('/home/akshat/Desktop/opencv-master/data/haarcascades/haarcascade_frontalface_default.xml')
 camera = cv2.VideoCapture(0)
 while True:
@@ -34,6 +35,7 @@ while True:
 		gray_face = gray[y:y+h, x:x+w]
 		color_face = frame[y:y+h, x:x+w]
 		gray_normalized = gray_face / 255
+
 		original_shape = gray_face.shape
 		face_resized = cv2.resize(gray_normalized, (96, 96), interpolation = cv2.INTER_AREA)
 		face_resized = face_resized.reshape(1, 96, 96, 1)
@@ -42,11 +44,14 @@ while True:
 		points = []
 		for i, co in enumerate(keypoints[0][0::2]):
 			points.append((co, keypoints[0][1::2][i]))
+
+		
 		face_resized_color = cv2.resize(color_face, (96, 96), interpolation = cv2.INTER_AREA)
 		for keypoint in points:
 			cv2.circle(face_resized_color, keypoint, 1, (0,255,0), 1)
 
 		frame[y:y+h, x:x+w] = cv2.resize(face_resized_color, original_shape, interpolation = cv2.INTER_CUBIC)
+		#print(frame)
 		cv2.imshow("Facial Keypoints", frame)
 	k = cv2.waitKey(33)
 	if k==27:
