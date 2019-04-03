@@ -27,17 +27,12 @@ train['Image'] = train['Image'].apply(lambda im: np.fromstring(im, sep=' '))
 train = train.dropna()     
 X = np.vstack(train['Image'].values)
 X = X.astype(np.float32)
-X = X/255
 y = train[train.columns[:-1]].values
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import MinMaxScaler
+X = np.vstack(train['Image'].values) / 255. 
+X = X.astype(np.float32)
 X = X.reshape(-1,96,96,1)
-output_pipe = make_pipeline(
-    MinMaxScaler(feature_range=(-1, 1))
-)
-
-y = output_pipe.fit_transform(y)
-from sklearn.model_selection import train_test_split
+y = (y-48)/48
+y = y.astype(np.float32)
 my_model = CNN_Model()
 compile_my_CNN_model(my_model, optimizer = 'adam', loss='mean_squared_error', metrics=['accuracy'])
 train = train_my_CNN_model(my_model, X, y)
